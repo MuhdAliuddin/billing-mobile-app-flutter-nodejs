@@ -23,7 +23,7 @@ import {BillingRepository} from '../repositories';
 export class BillingController {
   constructor(
     @repository(BillingRepository)
-    public billingRepository : BillingRepository,
+    public billingRepository: BillingRepository,
   ) {}
 
   @post('/billings')
@@ -52,9 +52,7 @@ export class BillingController {
     description: 'Billing model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(BILLING) where?: Where<BILLING>,
-  ): Promise<Count> {
+  async count(@param.where(BILLING) where?: Where<BILLING>): Promise<Count> {
     return this.billingRepository.count(where);
   }
 
@@ -106,7 +104,8 @@ export class BillingController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(BILLING, {exclude: 'where'}) filter?: FilterExcludingWhere<BILLING>
+    @param.filter(BILLING, {exclude: 'where'})
+    filter?: FilterExcludingWhere<BILLING>,
   ): Promise<BILLING> {
     return this.billingRepository.findById(id, filter);
   }
@@ -146,5 +145,22 @@ export class BillingController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.billingRepository.deleteById(id);
+  }
+
+  @get('/billings/receipt/{id}')
+  @response(200, {
+    description: 'Billing model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(BILLING, {includeRelations: true}),
+      },
+    },
+  })
+  async findReceiptById(
+    @param.path.number('id') id: number,
+    @param.filter(BILLING, {exclude: 'where'})
+    filter?: FilterExcludingWhere<BILLING>,
+  ): Promise<BILLING> {
+    return this.billingRepository.findById(id, filter);
   }
 }
